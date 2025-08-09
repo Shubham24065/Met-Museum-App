@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { isAuthenticated } from '@/lib/authenticate';
 import { useAtom } from 'jotai';
@@ -11,8 +11,15 @@ export default function RouteGuard({ children }) {
   const router = useRouter();
   const [, setFavouritesList] = useAtom(favouritesAtom);
   const [, setSearchHistory] = useAtom(searchHistoryAtom);
+  const [mounted, setMounted] = useState(false); // ensure client-only effects
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || !router.isReady) return;
+
     const hydrate = async () => {
       const isPublic = PUBLIC_PATHS.includes(router.pathname);
       if (!isPublic && !isAuthenticated()) {
@@ -27,9 +34,13 @@ export default function RouteGuard({ children }) {
         setSearchHistory(undefined);
       }
     };
+
     hydrate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.pathname]);
+  }, [mounted, router.isReady, router.pathname]);
+
+  // Avoid rendering gated content on the server
+  if (!mounted) return null;
 
   return children;
 }
