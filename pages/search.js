@@ -39,7 +39,7 @@ export default function AdvancedSearch() {
           <Form.Group className="mb-3">
             <Form.Label>Geo Location</Form.Label>
             <Form.Control type="text" {...register('geoLocation')} />
-            <Form.Text className="text-muted">Case sensitive (e.g., "Europe", "France")</Form.Text>
+            <Form.Text className="text-muted">Case sensitive (e.g., &quot;Europe&quot;, &quot;France&quot;)</Form.Text>
           </Form.Group>
         </Col>
       </Row>
